@@ -43,16 +43,22 @@ const SquawkSearch = (() => {
       a.rel = "noopener noreferrer";
       a.dataset.index = i;
 
+      // Reuse SquawkRenderer's favicon logic if available, otherwise basic fallback
       const img = document.createElement("img");
       img.className = "search-result-icon";
       img.width = 20;
       img.height = 20;
-      try {
-        const domain = new URL(item.url).hostname;
-        img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+      if (typeof SquawkRenderer !== "undefined" && SquawkRenderer.getIconUrl) {
+        img.src = SquawkRenderer.getIconUrl(item.name, item.url);
         img.onerror = () => { img.src = "assets/logo-fallback.svg"; };
-      } catch {
-        img.src = "assets/logo-fallback.svg";
+      } else {
+        try {
+          const domain = new URL(item.url).hostname;
+          img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+          img.onerror = () => { img.src = "assets/logo-fallback.svg"; };
+        } catch {
+          img.src = "assets/logo-fallback.svg";
+        }
       }
       a.appendChild(img);
 
