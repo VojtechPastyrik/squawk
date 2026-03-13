@@ -229,6 +229,41 @@ body {
   letter-spacing: 0.05em;
   color: var(--text-secondary);
   margin-bottom: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+
+.group-title:hover {
+  color: var(--text-primary);
+}
+
+.group-chevron {
+  font-size: 0.6rem;
+  transition: transform 0.2s;
+  transform: rotate(90deg);
+  display: inline-block;
+}
+
+.group.collapsed .group-chevron {
+  transform: rotate(0deg);
+}
+
+.group-body {
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+  overflow: hidden;
+}
+
+.group.collapsed .group-body {
+  max-height: 0 !important;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.group.collapsed .group-title {
+  margin-bottom: 0;
 }
 
 .links-grid {

@@ -115,28 +115,69 @@ const SquawkRenderer = (() => {
     return div;
   }
 
-  function createGroup(group) {
+  function createGroup(group, tabIndex) {
     const section = document.createElement("div");
     section.className = "group";
+
+    const collapsed = isCollapsed(tabIndex, group.name);
+    if (collapsed) section.classList.add("collapsed");
+
     const title = document.createElement("div");
     title.className = "group-title";
-    title.textContent = group.name;
+
+    const chevron = document.createElement("span");
+    chevron.className = "group-chevron";
+    chevron.textContent = "\u25B6";
+    title.appendChild(chevron);
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = group.name;
+    title.appendChild(nameSpan);
+
+    title.addEventListener("click", () => {
+      toggleCollapsed(tabIndex, group.name);
+      section.classList.toggle("collapsed");
+    });
+
     section.appendChild(title);
+
+    const body = document.createElement("div");
+    body.className = "group-body";
 
     if (group.subgroups) {
       for (const sub of group.subgroups) {
-        section.appendChild(createSubgroup(sub));
+        body.appendChild(createSubgroup(sub));
       }
     }
 
     if (group.links) {
-      section.appendChild(createLinksGrid(group.links));
+      body.appendChild(createLinksGrid(group.links));
     }
+
+    section.appendChild(body);
     return section;
+  }
+
+  function getCollapsedKey(tabIndex, groupName) {
+    return `squawk-collapsed-${tabIndex}-${groupName}`;
+  }
+
+  function isCollapsed(tabIndex, groupName) {
+    return localStorage.getItem(getCollapsedKey(tabIndex, groupName)) === "1";
+  }
+
+  function toggleCollapsed(tabIndex, groupName) {
+    const key = getCollapsedKey(tabIndex, groupName);
+    if (localStorage.getItem(key) === "1") {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, "1");
+    }
   }
 
   function renderTab(index) {
     _activeTab = index;
+    localStorage.setItem("squawk-active-tab", index);
     const content = document.getElementById("content");
     content.innerHTML = "";
 
@@ -144,7 +185,7 @@ const SquawkRenderer = (() => {
     if (!tab || !tab.groups) return;
 
     for (const group of tab.groups) {
-      content.appendChild(createGroup(group));
+      content.appendChild(createGroup(group, index));
     }
 
     document.querySelectorAll(".tab-btn").forEach((btn, i) => {
@@ -187,7 +228,9 @@ const SquawkRenderer = (() => {
     if (_tabs.length === 0) return;
 
     renderTabs(_tabs);
-    renderTab(0);
+    const saved = parseInt(localStorage.getItem("squawk-active-tab"), 10);
+    const initial = saved >= 0 && saved < _tabs.length ? saved : 0;
+    renderTab(initial);
   }
 
   function getIconUrl(name, url) {
