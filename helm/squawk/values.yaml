@@ -1,0 +1,103 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/vojtechpastyrik/squawk
+  tag: ""
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: squawk.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+    # - name: my-gateway
+    #   namespace: gateway-system
+  hostnames: []
+    # - squawk.local
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 16Mi
+  requests:
+    cpu: 10m
+    memory: 8Mi
+
+# --- Squawk app configuration (rendered into ConfigMap) ---
+squawk:
+  branding:
+    title: "Squawk"
+    logo: ""
+    greeting: "Hello, %name%"
+    name: "User"
+
+  theme:
+    default: "dark"
+    colors:
+      dark:
+        accent: "#7a4cf2"
+        # bg-primary: "#0a0a0a"
+        # bg-secondary: "#141414"
+        # bg-card: "#1a1a1a"
+        # text-primary: "#e0e0e0"
+        # text-secondary: "#888888"
+        # border: "#2a2a2a"
+        # search-bg: "#141414"
+      light:
+        accent: "#6fd4bb"
+        # bg-primary: "#f5f5f5"
+        # bg-secondary: "#eeeeee"
+        # bg-card: "#ffffff"
+        # text-primary: "#1a1a1a"
+        # text-secondary: "#666666"
+        # border: "#dddddd"
+        # search-bg: "#ffffff"
+
+  search:
+    placeholder: "Search links..."
+    hotkey: "/"
+
+  tabs:
+    - name: "Home"
+      icon: "🏠"
+      groups:
+        - name: "Productivity"
+          subgroups:
+            - name: "Communication"
+              links:
+                - name: "Gmail"
+                  url: "https://mail.google.com"
+                - name: "Slack"
+                  url: "https://slack.com"
+          links:
+            - name: "YouTube"
+              url: "https://youtube.com"
+    - name: "Dev"
+      icon: "💻"
+      groups:
+        - name: "Code"
+          links:
+            - name: "GitHub"
+              url: "https://github.com"
+
+  widgets:
+    - type: "clock"
+      position: "top-right"
+      format: "24h"
+      show_date: true
+    - type: "greeting"
+      position: "top-center"

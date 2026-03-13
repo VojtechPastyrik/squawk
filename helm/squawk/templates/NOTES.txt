@@ -1,0 +1,13 @@
+Squawk has been deployed!
+
+{{- if .Values.ingress.enabled }}
+Access your dashboard at:
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+{{- else }}
+Get the application URL by running:
+  export POD_NAME=$(kubectl get pods -l "app.kubernetes.io/name={{ include "squawk.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl port-forward $POD_NAME 8080:80
+  echo "Visit http://localhost:8080"
+{{- end }}

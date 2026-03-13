@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "squawk.fullname" . }}-config
+  labels:
+    {{- include "squawk.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    {{- .Values.squawk | toYaml | nindent 4 }}

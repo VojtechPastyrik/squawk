@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Squawk</title>
+  <link rel="icon" id="favicon" href="assets/logo-fallback.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <div class="header-left">
+        <img id="logo" src="assets/logo-fallback.svg" alt="Logo" class="logo">
+        <h1 id="site-title">Squawk</h1>
+      </div>
+      <div id="widget-area-top-center" class="widget-area"></div>
+      <div class="header-right">
+        <div id="widget-area-top-right" class="widget-area"></div>
+        <button id="theme-toggle" aria-label="Toggle theme">
+          <span class="theme-icon-dark">☀️</span>
+          <span class="theme-icon-light">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <div id="search-container">
+      <input type="text" id="search-input" autocomplete="off" spellcheck="false">
+      <div id="search-results" class="hidden"></div>
+    </div>
+
+    <nav id="tabs-nav"></nav>
+
+    <main id="content"></main>
+
+    <div id="widget-area-bottom" class="widget-area"></div>
+  </div>
+
+  <script src="js/vendor/js-yaml.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/widgets.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
