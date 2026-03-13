@@ -4,28 +4,30 @@ const SquawkRenderer = (() => {
   let _activeTab = 0;
   let _tabs = [];
 
-  // Known service icons — matched against link name and URL (lowercase)
+  // Known service icons via dashboard-icons CDN
+  const CDN = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/";
   const SERVICE_ICONS = [
-    { match: ["argocd", "argo-cd"], favicon: "https://argo-cd.readthedocs.io/en/stable/assets/favicon/favicon-32x32.png" },
-    { match: ["jira"], favicon: "https://jira.atlassian.com/s/d41d8cd98f00b204e9800998ecf8427e-CDN/lu2cib/820016/12ta74/1.0/_/favicon-update.ico" },
-    { match: ["confluence", "conflu"], favicon: "https://confluence.atlassian.com/s/d41d8cd98f00b204e9800998ecf8427e-CDN/li2p18/9012/12ta74/1.0/_/favicon-update.ico" },
-    { match: ["rabbitmq", "rabbit"], favicon: "https://www.rabbitmq.com/favicon.ico" },
-    { match: ["wso2"], favicon: "https://wso2.com/favicon.ico" },
-    { match: ["grafana"], favicon: "https://grafana.com/static/assets/img/fav32.png" },
-    { match: ["harbor"], favicon: "https://goharbor.io/favicon.ico" },
-    { match: ["gitlab"], favicon: "https://gitlab.com/assets/favicon-72a2cad5025aa931d6ea56c3201d1f18e68a8571fc4fa9571b7571f9814f5e.ico" },
-    { match: ["github"], favicon: "https://github.com/favicon.ico" },
+    { match: ["argocd", "argo-cd", "argo cd"], favicon: CDN + "argo-cd.png" },
+    { match: ["jira"], favicon: CDN + "jira.png" },
+    { match: ["confluence", "conflu"], favicon: CDN + "confluence.png" },
+    { match: ["rabbitmq", "rabbit"], favicon: CDN + "rabbitmq.png" },
+    { match: ["wso2"], favicon: "https://www.google.com/s2/favicons?domain=wso2.com&sz=32" },
+    { match: ["grafana"], favicon: CDN + "grafana.png" },
+    { match: ["harbor"], favicon: CDN + "harbor.png" },
+    { match: ["gitlab"], favicon: CDN + "gitlab.png" },
+    { match: ["github"], favicon: CDN + "github.png" },
+    { match: ["azure devops", "dev.azure"], favicon: CDN + "azure-devops.png" },
     { match: ["azure", "portal.azure"], favicon: "https://portal.azure.com/favicon.ico" },
-    { match: ["kubernetes", "k8s"], favicon: "https://kubernetes.io/images/favicon.png" },
-    { match: ["openshift", "okd"], favicon: "https://www.redhat.com/favicon.ico" },
-    { match: ["sharepoint"], favicon: "https://www.microsoft.com/favicon.ico" },
-    { match: ["youtrack"], favicon: "https://www.jetbrains.com/favicon.ico" },
-    { match: ["slack"], favicon: "https://slack.com/favicon.ico" },
-    { match: ["datadog"], favicon: "https://www.datadoghq.com/favicon.ico" },
-    { match: ["pagerduty"], favicon: "https://www.pagerduty.com/favicon.ico" },
-    { match: ["terraform"], favicon: "https://www.terraform.io/favicon.ico" },
-    { match: ["docker"], favicon: "https://www.docker.com/favicon.ico" },
-    { match: ["devops", "dev.azure"], favicon: "https://cdn.vsassets.io/content/icons/favicon.ico" },
+    { match: ["kubernetes", "k8s"], favicon: CDN + "kubernetes-dashboard.png" },
+    { match: ["openshift", "okd"], favicon: CDN + "openshift.png" },
+    { match: ["sharepoint"], favicon: CDN + "microsoft-sharepoint.png" },
+    { match: ["youtrack"], favicon: CDN + "jetbrains-youtrack.png" },
+    { match: ["slack"], favicon: CDN + "slack.png" },
+    { match: ["datadog"], favicon: CDN + "datadog.png" },
+    { match: ["pagerduty"], favicon: CDN + "pagerduty.png" },
+    { match: ["terraform"], favicon: CDN + "terraform.png" },
+    { match: ["docker"], favicon: CDN + "docker.png" },
+    { match: ["hawtio"], favicon: "https://www.google.com/s2/favicons?domain=hawt.io&sz=32" },
   ];
 
   function getServiceIcon(name, url) {
@@ -47,18 +49,18 @@ const SquawkRenderer = (() => {
     }
   }
 
-  function createFavicon(name, url) {
+  function createFavicon(name, url, icon) {
     const img = document.createElement("img");
     img.className = "link-icon";
     img.loading = "lazy";
     img.width = 20;
     img.height = 20;
 
-    const serviceIcon = getServiceIcon(name, url);
-    if (serviceIcon) {
-      img.src = serviceIcon;
+    // Priority: 1) explicit icon from config, 2) service match, 3) Google favicon, 4) fallback
+    const resolved = icon || getServiceIcon(name, url);
+    if (resolved) {
+      img.src = resolved;
       img.onerror = () => {
-        // Fall back to Google favicon API
         const googleSrc = getFaviconUrl(url);
         if (googleSrc) {
           img.src = googleSrc;
@@ -85,7 +87,7 @@ const SquawkRenderer = (() => {
     a.href = link.url;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
-    a.appendChild(createFavicon(link.name, link.url));
+    a.appendChild(createFavicon(link.name, link.url, link.icon));
     const span = document.createElement("span");
     span.className = "link-name";
     span.textContent = link.name;
