@@ -69,3 +69,42 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: squawk-*.tgz
+
+  charts:
+    runs-on: ubuntu-latest
+    needs: helm
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Package chart
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          helm package helm/squawk --version ${VERSION} --app-version ${VERSION}
+
+      - name: Clone charts repo
+        run: |
+          git clone --branch gh-pages https://x-access-token:${{ secrets.CHARTS_TOKEN }}@github.com/vojtechpastyrik/charts.git charts-repo
+
+      - name: Update Helm repo index
+        run: |
+          cp squawk-*.tgz charts-repo/
+          cd charts-repo
+          if [ -f index.yaml ]; then
+            helm repo index . --url https://vojtechpastyrik.github.io/charts --merge index.yaml
+          else
+            helm repo index . --url https://vojtechpastyrik.github.io/charts
+          fi
+
+      - name: Push to charts repo
+        run: |
+          cd charts-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.yaml squawk-*.tgz
+          git commit -m "squawk ${GITHUB_REF_NAME}"
+          git push
