@@ -62,7 +62,8 @@ jobs:
 
       - name: Push chart to OCI registry
         run: |
-          helm push squawk-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          helm push squawk-*.tgz oci://ghcr.io/${OWNER}/charts
 
       - name: Upload chart to release
         uses: softprops/action-gh-release@v2
