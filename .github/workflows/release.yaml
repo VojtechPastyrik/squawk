@@ -46,15 +46,23 @@ jobs:
     needs: docker
     permissions:
       contents: write
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Helm
         uses: azure/setup-helm@v4
 
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Package Helm chart
         run: |
           helm package helm/squawk --version ${GITHUB_REF_NAME#v} --app-version ${GITHUB_REF_NAME#v}
+
+      - name: Push chart to OCI registry
+        run: |
+          helm push squawk-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
 
       - name: Upload chart to release
         uses: softprops/action-gh-release@v2
