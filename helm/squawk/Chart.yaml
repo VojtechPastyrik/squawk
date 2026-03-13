@@ -4,13 +4,24 @@ description: A self-hosted, YAML-configured startpage dashboard
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
+icon: https://raw.githubusercontent.com/vojtechpastyrik/squawk/main/src/assets/logo.svg
 home: https://github.com/vojtechpastyrik/squawk
 sources:
   - https://github.com/vojtechpastyrik/squawk
 maintainers:
   - name: Vojtech Pastyrik
+keywords:
+  - startpage
+  - dashboard
+  - homepage
+  - bookmarks
 annotations:
   artifacthub.io/license: MIT
   artifacthub.io/links: |
     - name: Source
       url: https://github.com/vojtechpastyrik/squawk
+  artifacthub.io/screenshots: |
+    - title: Dark theme
+      url: https://raw.githubusercontent.com/vojtechpastyrik/squawk/main/screenshots/dark.png
+    - title: Light theme
+      url: https://raw.githubusercontent.com/vojtechpastyrik/squawk/main/screenshots/light.png
