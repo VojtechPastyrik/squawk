@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of pod replicas"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "description": "Container image repository"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Container image tag (defaults to appVersion)"
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "description": "Image pull policy"
+        }
+      },
+      "additionalProperties": false
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer"],
+          "description": "Kubernetes Service type"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Service port"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Ingress resource"
+        },
+        "className": {
+          "type": "string",
+          "description": "Ingress class name"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Ingress annotations"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string",
+                "description": "Hostname"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "pathType": {
+                      "type": "string",
+                      "enum": ["Prefix", "Exact", "ImplementationSpecific"]
+                    }
+                  },
+                  "required": ["path", "pathType"]
+                }
+              }
+            },
+            "required": ["host", "paths"]
+          }
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "secretName": {
+                "type": "string"
+              },
+              "hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": ["secretName", "hosts"]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "httpRoute": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Gateway API HTTPRoute"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "HTTPRoute annotations"
+        },
+        "parentRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "namespace": {
+                "type": "string"
+              }
+            },
+            "required": ["name"]
+          },
+          "description": "Gateway parent references"
+        },
+        "hostnames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Hostnames for the HTTPRoute"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          }
+        },
+        "requests": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Container resource limits and requests"
+    },
+    "squawk": {
+      "type": "object",
+      "description": "Squawk application configuration (rendered into ConfigMap)",
+      "properties": {
+        "branding": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Page title"
+            },
+            "logo": {
+              "type": "string",
+              "description": "Logo URL"
+            },
+            "greeting": {
+              "type": "string",
+              "description": "Greeting template (%name% is replaced with name)"
+            },
+            "name": {
+              "type": "string",
+              "description": "User name for greeting"
+            }
+          }
+        },
+        "theme": {
+          "type": "object",
+          "properties": {
+            "default": {
+              "type": "string",
+              "enum": ["dark", "light"],
+              "description": "Default theme"
+            },
+            "colors": {
+              "type": "object",
+              "properties": {
+                "dark": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Dark theme color overrides"
+                },
+                "light": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Light theme color overrides"
+                }
+              }
+            }
+          }
+        },
+        "search": {
+          "type": "object",
+          "properties": {
+            "placeholder": {
+              "type": "string",
+              "description": "Search input placeholder text"
+            },
+            "hotkey": {
+              "type": "string",
+              "description": "Keyboard shortcut to focus search"
+            }
+          }
+        },
+        "tabs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Tab name"
+              },
+              "icon": {
+                "type": "string",
+                "description": "Tab icon (emoji)"
+              },
+              "groups": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/group"
+                }
+              }
+            },
+            "required": ["name", "groups"]
+          },
+          "description": "Tab definitions"
+        },
+        "widgets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Widget type (clock, greeting, weather)"
+              },
+              "position": {
+                "type": "string",
+                "enum": ["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"],
+                "description": "Widget position"
+              },
+              "format": {
+                "type": "string",
+                "enum": ["12h", "24h"],
+                "description": "Time format (clock widget)"
+              },
+              "show_date": {
+                "type": "boolean",
+                "description": "Show date (clock widget)"
+              },
+              "icao": {
+                "type": "string",
+                "description": "ICAO airport code (weather widget)"
+              }
+            },
+            "required": ["type", "position"]
+          },
+          "description": "Dashboard widgets"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "link": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Link display name"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link URL"
+        }
+      },
+      "required": ["name", "url"]
+    },
+    "group": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Group name"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        "subgroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Subgroup name"
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/link"
+                }
+              }
+            },
+            "required": ["name", "links"]
+          }
+        }
+      },
+      "required": ["name"]
+    }
+  }
+}
